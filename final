@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+
+//função para ver se é maiúscula
+bool isUpperCase(char c)
+{
+    return c >= 'A' && c <= 'Z';
+}
+
+//função para ver se é minúscula
+bool isLowerCase(char c)
+{
+    return c >= 'a' && c <= 'z';
+}
+
+//função para verificar se uma string é nice
+bool isNice(char* s)
+{
+    bool hasUpperCase[26] = { false };
+    bool hasLowerCase[26] = { false };
+
+    int len = strlen(s);
+    for (int i = 0; i < len; i++)
+    {
+        if (isUpperCase(s[i]))
+        {
+            hasUpperCase[s[i] - 'A'] = true;
+        }
+        else if (isLowerCase(s[i]))
+        {
+            hasLowerCase[s[i] - 'a'] = true;
+        }
+    }
+
+    for (int i = 0; i < 26; i++)
+    {
+        if (hasUpperCase[i] && !hasLowerCase[i])
+        {
+            return false;
+        }
+        if (hasLowerCase[i] && !hasUpperCase[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//função para encontrar a substring mais longa que é nice
+char* longestNiceSubstring(char* s)
+{
+    int len = strlen(s);
+    char* longestNice = strdup("");
+    for (int i = 0; i < len; i++)
+    {
+        for (int j = i + 1; j <= len; j++)
+        {
+            char substring[j - i + 1];
+            strncpy(substring, s + i, j - i);
+            substring[j - i] = '\0';
+            if (isNice(substring) && strlen(substring) > strlen(longestNice))
+            {
+                free(longestNice);
+                longestNice = strdup(substring);
+            }
+        }
+    }
+    return longestNice;
+}
+
+int main()
+{
+    char str[100];
+    printf("Digite uma string: ");
+    fgets(str, sizeof(str), stdin);
+    str[strcspn(str, "\n")] = '\0';
+
+    char* longestNice = longestNiceSubstring(str);
+    printf("Longest nice substring: %s\n", longestNice);
+    free(longestNice);
+
+    return 0;
+}
